@@ -1,101 +1,305 @@
-import Image from "next/image";
+"use client";
+import React, { useEffect, useState } from "react";
+import { Search, Edit, Trash2, Plus } from "lucide-react";
+import { Formik, Form, Field, FormikHelpers } from "formik";
+import { z } from "zod";
+import { toFormikValidationSchema } from "zod-formik-adapter";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-export default function Home() {
+interface Task {
+  id: number;
+  title: string;
+  description: string;
+  status: "pending" | "in-progress" | "completed";
+  dueDate: string;
+}
+
+const taskSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  status: z.enum(["pending", "in-progress", "completed"]),
+  dueDate: z.string().refine((date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return new Date(date) >= today;
+  }, "Due date cannot be in the past"),
+});
+
+type TaskFormValues = z.infer<typeof taskSchema>;
+
+const initialTasks: Task[] = [
+  {
+    id: 1,
+    title: "Complete Project Proposal",
+    description: "Draft and submit the Q1 project proposal",
+    status: "pending",
+    dueDate: new Date().toISOString().split("T")[0],
+  },
+];
+
+const Home: React.FC = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    setTasks(initialTasks);
+  }, []);
+
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<"all" | Task["status"]>(
+    "all"
+  );
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  const handleSubmit = async (
+    values: TaskFormValues,
+    { resetForm }: FormikHelpers<TaskFormValues>
+  ): Promise<void> => {
+    if (editingTask) {
+      setTasks(
+        tasks.map((task) =>
+          task.id === editingTask.id ? { ...values, id: task.id } : task
+        )
+      );
+    } else {
+      setTasks([...tasks, { ...values, id: Date.now() }]);
+    }
+
+    resetForm();
+    setEditingTask(null);
+    setIsDialogOpen(false);
+  };
+
+  const handleDelete = (taskId: number): void => {
+    if (confirm("Are you sure you want to delete this task?")) {
+      setTasks(tasks.filter((task) => task.id !== taskId));
+    }
+  };
+
+  const handleEdit = (task: Task): void => {
+    setEditingTask(task);
+    setIsDialogOpen(true);
+  };
+
+  const initialValues: TaskFormValues = editingTask || {
+    title: "",
+    description: "",
+    status: "pending",
+    dueDate: "",
+  };
+
+  const filteredTasks = tasks.filter((task) => {
+    const matchesSearch = task.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || task.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="p-8 max-w-6xl mx-auto">
+      <div className="mb-8 flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Task Dashboard</h1>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => setEditingTask(null)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Task
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {editingTask ? "Edit Task" : "Create New Task"}
+              </DialogTitle>
+            </DialogHeader>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={toFormikValidationSchema(taskSchema)}
+              onSubmit={handleSubmit}
+              enableReinitialize
+            >
+              {({ errors, touched, values, setFieldValue }) => (
+                <Form className="space-y-4">
+                  <div>
+                    <Field as={Input} name="title" placeholder="Task Title" />
+                    {errors.title && touched.title && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {errors.title}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <Field
+                      as={Input}
+                      name="description"
+                      placeholder="Description"
+                    />
+                    {errors.description && touched.description && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {errors.description}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <Select
+                      value={values.status}
+                      onValueChange={(value: Task["status"]) =>
+                        setFieldValue("status", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="in-progress">In Progress</SelectItem>
+                        {editingTask && (
+                          <SelectItem value="completed">Completed</SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    {errors.status && touched.status && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {errors.status}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <Field
+                      as={Input}
+                      type="date"
+                      name="dueDate"
+                      min={new Date().toISOString().split("T")[0]}
+                    />
+                    {errors.dueDate && touched.dueDate && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {errors.dueDate}
+                      </div>
+                    )}
+                  </div>
+                  <Button type="submit" className="w-full">
+                    {editingTask ? "Update Task" : "Create Task"}
+                  </Button>
+                </Form>
+              )}
+            </Formik>
+          </DialogContent>
+        </Dialog>
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <div className="mb-6 flex gap-4">
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search tasks..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Select
+          value={statusFilter}
+          onValueChange={(value: "all" | Task["status"]) =>
+            setStatusFilter(value)
+          }
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="in-progress">In Progress</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="bg-white rounded-lg shadow">
+        <table className="w-full">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Title
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Description
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Due Date
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {filteredTasks.map((task) => (
+              <tr key={task.id}>
+                <td className="px-6 py-4">{task.title}</td>
+                <td className="px-6 py-4">{task.description}</td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                    ${
+                      task.status === "completed"
+                        ? "bg-green-100 text-green-800"
+                        : task.status === "in-progress"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  {new Date(task.dueDate).toLocaleDateString()}
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(task)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDelete(task.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
-}
+};
+
+export default Home;
