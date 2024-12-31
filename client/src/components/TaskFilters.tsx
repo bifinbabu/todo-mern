@@ -16,6 +16,8 @@ interface TaskFiltersProps {
   setStatusFilter: (
     status: "all" | "pending" | "in-progress" | "completed"
   ) => void;
+  sortOrder: "asc" | "desc";
+  setSortOrder: (order: "asc" | "desc") => void;
 }
 
 const TaskFilters: React.FC<TaskFiltersProps> = ({
@@ -23,6 +25,8 @@ const TaskFilters: React.FC<TaskFiltersProps> = ({
   setSearchQuery,
   statusFilter,
   setStatusFilter,
+  sortOrder,
+  setSortOrder,
 }) => {
   return (
     <div className="mb-6 flex gap-4">
@@ -44,6 +48,15 @@ const TaskFilters: React.FC<TaskFiltersProps> = ({
           <SelectItem value="pending">Pending</SelectItem>
           <SelectItem value="in-progress">In Progress</SelectItem>
           <SelectItem value="completed">Completed</SelectItem>
+        </SelectContent>
+      </Select>
+      <Select value={sortOrder} onValueChange={setSortOrder}>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Sort by" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="asc">Ascending</SelectItem>
+          <SelectItem value="desc">Descending</SelectItem>
         </SelectContent>
       </Select>
     </div>
