@@ -65,6 +65,8 @@ const Home: React.FC = () => {
   );
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   const handleSubmit = async (
     values: TaskFormValues,
@@ -111,6 +113,12 @@ const Home: React.FC = () => {
       statusFilter === "all" || task.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const totalPages = Math.ceil(filteredTasks.length / itemsPerPage);
+  const paginatedTasks = filteredTasks.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
@@ -254,7 +262,7 @@ const Home: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {filteredTasks.map((task) => (
+            {paginatedTasks.map((task) => (
               <tr key={task.id}>
                 <td className="px-6 py-4">{task.title}</td>
                 <td className="px-6 py-4">{task.description}</td>
@@ -297,6 +305,26 @@ const Home: React.FC = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
       </div>
     </div>
   );
