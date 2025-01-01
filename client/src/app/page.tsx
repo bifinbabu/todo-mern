@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Formik, Form, Field, FormikHelpers } from "formik";
-import { z } from "zod";
+import { FormikHelpers } from "formik";
 import TaskForm from "@/components/TaskForm";
 import TaskTable from "@/components/TaskTable";
 import TaskFilters from "@/components/TaskFilters";
@@ -75,10 +74,13 @@ const Home: React.FC = () => {
   });
 
   const sortedTasks = [...filteredTasks].sort((a, b) => {
+    const dateA = new Date(a.dueDate);
+    const dateB = new Date(b.dueDate);
+
     if (sortOrder === "asc") {
-      return a.title.localeCompare(b.title);
+      return dateA.getTime() - dateB.getTime();
     } else {
-      return b.title.localeCompare(a.title);
+      return dateB.getTime() - dateA.getTime();
     }
   });
 
