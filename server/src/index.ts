@@ -15,7 +15,8 @@ app.use(cors());
 
 app.use(bodyParser.json());
 app.use("/", async (req: Request, res: Response) => {
-  const tasks = await Task.find();
+  // const tasks = await Task.find();
+  const tasks = {};
   res.status(200).json({ message: "TODO api server", tasks });
 });
 // app.use("/api", taskRoutes);
