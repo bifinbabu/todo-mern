@@ -7,7 +7,7 @@ import Task from "./models/taskModel";
 // import taskRoutes from "./routes/taskRoutes";
 
 dotenv.config();
-connectDB();
+// connectDB();
 
 const app = express();
 
