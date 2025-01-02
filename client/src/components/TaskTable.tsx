@@ -6,16 +6,23 @@ interface TaskTableProps {
   paginatedTasks: Task[];
   handleEdit: (task: Task) => void;
   handleDelete: (taskId: string) => void;
+  totalTasks: number;
 }
 
 const TaskTable: React.FC<TaskTableProps> = ({
   paginatedTasks,
   handleEdit,
   handleDelete,
+  totalTasks,
 }) => {
   console.log("first", paginatedTasks);
   return (
     <div className="bg-white rounded-lg shadow">
+      <div className="p-4">
+        <p>
+          Showing {paginatedTasks.length} of {totalTasks} tasks
+        </p>
+      </div>
       <table className="w-full">
         <thead className="bg-gray-50">
           <tr>

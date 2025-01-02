@@ -17,7 +17,7 @@ export const getTasks = async (req: Request, res: Response) => {
     const query: any = {};
 
     if (searchQuery) {
-      query.title = { $regex: searchQuery, $options: "i" }; // Case-insensitive search
+      query.title = { $regex: searchQuery, $options: "i" };
     }
 
     if (statusFilter && statusFilter !== "all") {
@@ -30,7 +30,9 @@ export const getTasks = async (req: Request, res: Response) => {
       .limit(Number(limit));
 
     const total = await Task.countDocuments(query);
-    res.status(200).json({ tasks, total });
+    const allTotal = await Task.countDocuments();
+
+    res.status(200).json({ tasks, total, allTotal });
   } catch (error) {
     console.error("Error fetching tasks:", error);
     res.status(500).json({ message: "Error fetching tasks" });

@@ -25,6 +25,7 @@ const Home: React.FC = () => {
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [totalPages, setTotalPages] = useState<number>(0);
+  const [totalTaskCount, setTotalTaskCount] = useState<number>(0);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -41,6 +42,7 @@ const Home: React.FC = () => {
         });
         setTasks(response.data.tasks);
         setTotalPages(Math.ceil(response.data.total / itemsPerPage));
+        setTotalTaskCount(response.data.allTotal);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       } finally {
@@ -129,6 +131,7 @@ const Home: React.FC = () => {
             paginatedTasks={tasks}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
+            totalTasks={totalTaskCount}
           />
           <Pagination
             currentPage={currentPage}
