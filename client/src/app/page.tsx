@@ -23,14 +23,18 @@ const Home: React.FC = () => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] =
     useState<boolean>(false);
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchTasks = async () => {
+      setLoading(true);
       try {
         const response = await axiosInstance.get("/tasks");
         setTasks(response.data.tasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -120,26 +124,32 @@ const Home: React.FC = () => {
         />
       </div>
 
-      <TaskFilters
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
-      />
-
-      <TaskTable
-        paginatedTasks={paginatedTasks}
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
-      />
-
-      <Pagination
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        totalPages={totalPages}
-      />
+      {loading ? (
+        <div className="flex justify-center items-center">
+          <div className="loader">Loading...</div>
+        </div>
+      ) : (
+        <>
+          <TaskFilters
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+          />
+          <TaskTable
+            paginatedTasks={paginatedTasks}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+          />
+          <Pagination
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+          />
+        </>
+      )}
 
       <ConfirmationModal
         isOpen={isConfirmationModalOpen}
