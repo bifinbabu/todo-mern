@@ -7,7 +7,7 @@ import Task from "./models/taskModel";
 // import taskRoutes from "./routes/taskRoutes";
 
 dotenv.config();
-// connectDB();
+connectDB();
 
 const app = express();
 
@@ -15,8 +15,8 @@ app.use(cors());
 
 app.use(bodyParser.json());
 app.use("/", async (req: Request, res: Response) => {
-  // const tasks = await Task.find();
-  const tasks = {};
+  const tasks = await Task.find();
+  // const tasks = {};
   res.status(200).json({ message: "TODO api server", tasks });
 });
 // app.use("/api", taskRoutes);
