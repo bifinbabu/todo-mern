@@ -40,13 +40,21 @@ export const getTasks = async (req: Request, res: Response) => {
 export const addTask = async (req: Request, res: Response): Promise<any> => {
   try {
     const { title, description, status, dueDate } = req.body;
-    if (new Date(dueDate) < new Date()) {
+
+    const parsedDueDate = new Date(dueDate);
+
+    if (parsedDueDate < new Date()) {
       return res
         .status(400)
         .json({ message: "Due date cannot be in the past" });
     }
 
-    const task = new Task({ title, description, status, dueDate });
+    const task = new Task({
+      title,
+      description,
+      status,
+      dueDate: parsedDueDate,
+    });
     await task.save();
     res.status(201).json(task);
   } catch (error) {

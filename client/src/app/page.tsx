@@ -36,7 +36,7 @@ const Home: React.FC = () => {
             limit: itemsPerPage,
             searchQuery: searchQuery,
             statusFilter: statusFilter,
-            sortOrder: sortOrder,
+            order: sortOrder,
           },
         });
         setTasks(response.data.tasks);
@@ -97,28 +97,6 @@ const Home: React.FC = () => {
     setEditingTask(task);
     setIsDialogOpen(true);
   };
-
-  // const filteredTasks = tasks.filter((task) => {
-  //   const matchesSearch = task.title
-  //     .toLowerCase()
-  //     .includes(searchQuery.toLowerCase());
-  //   const matchesStatus =
-  //     statusFilter === "all" || task.status === statusFilter;
-  //   return matchesSearch && matchesStatus;
-  // });
-
-  // const sortedTasks = [...filteredTasks].sort((a, b) => {
-  //   const dateA = new Date(a.dueDate);
-  //   const dateB = new Date(b.dueDate);
-  //   return sortOrder === "asc"
-  //     ? dateA.getTime() - dateB.getTime()
-  //     : dateB.getTime() - dateA.getTime();
-  // });
-
-  // const paginatedTasks = sortedTasks.slice(
-  //   (currentPage - 1) * itemsPerPage,
-  //   currentPage * itemsPerPage
-  // );
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
