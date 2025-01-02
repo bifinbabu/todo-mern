@@ -22,11 +22,13 @@ export const getTasks = async (req: Request, res: Response) => {
   }
 };
 
-export const addTask = async (req: Request, res: Response) => {
+export const addTask = async (req: Request, res: Response): Promise<any> => {
   try {
     const { title, description, status, dueDate } = req.body;
     if (new Date(dueDate) < new Date()) {
-      res.status(400).json({ message: "Due date cannot be in the past" });
+      return res
+        .status(400)
+        .json({ message: "Due date cannot be in the past" });
     }
 
     const task = new Task({ title, description, status, dueDate });
@@ -37,14 +39,14 @@ export const addTask = async (req: Request, res: Response) => {
   }
 };
 
-export const updateTask = async (req: Request, res: Response) => {
+export const updateTask = async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
     const updates = req.body;
 
     const task = await Task.findByIdAndUpdate(id, updates, { new: true });
     if (!task) {
-      res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({ message: "Task not found" });
     }
 
     res.status(200).json(task);
@@ -53,12 +55,12 @@ export const updateTask = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteTask = async (req: Request, res: Response) => {
+export const deleteTask = async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
     const task = await Task.findByIdAndDelete(id);
     if (!task) {
-      res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({ message: "Task not found" });
     }
 
     res.status(200).json({ message: "Task deleted successfully" });

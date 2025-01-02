@@ -14,7 +14,7 @@ app.use(cors());
 
 app.use(bodyParser.json());
 
-app.get("/", async (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response) => {
   res.status(200).json({ message: "TODO api server" });
 });
 

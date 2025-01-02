@@ -6,24 +6,10 @@ import TaskTable from "@/components/TaskTable";
 import TaskFilters from "@/components/TaskFilters";
 import Pagination from "@/components/Pagination";
 import { Task, TaskFormValues } from "@/utils/types";
-
-const initialTasks: Task[] = [
-  {
-    id: 1,
-    title: "Complete Project Proposal",
-    description: "Draft and submit the Q1 project proposal",
-    status: "pending",
-    dueDate: new Date().toISOString().split("T")[0],
-  },
-];
+import axiosInstance from "@/utils/axiosInstance";
 
 const Home: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-
-  useEffect(() => {
-    setTasks(initialTasks);
-  }, []);
-
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<"all" | Task["status"]>(
     "all"
@@ -34,28 +20,51 @@ const Home: React.FC = () => {
   const itemsPerPage = 5;
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await axiosInstance.get("/tasks");
+        setTasks(response.data.tasks);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+
   const handleSubmit = async (
     values: TaskFormValues,
     { resetForm }: FormikHelpers<TaskFormValues>
   ): Promise<void> => {
-    if (editingTask) {
-      setTasks(
-        tasks.map((task) =>
-          task.id === editingTask.id ? { ...values, id: task.id } : task
-        )
-      );
-    } else {
-      setTasks([...tasks, { ...values, id: Date.now() }]);
+    try {
+      if (editingTask) {
+        await axiosInstance.put(`/tasks/${editingTask.id}`, values);
+        setTasks(
+          tasks.map((task) =>
+            task.id === editingTask.id ? { ...values, id: task.id } : task
+          )
+        );
+      } else {
+        const response = await axiosInstance.post("/tasks", values);
+        setTasks([...tasks, { ...response.data, id: response.data.id }]);
+      }
+      resetForm();
+      setEditingTask(null);
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Error submitting task:", error);
     }
-
-    resetForm();
-    setEditingTask(null);
-    setIsDialogOpen(false);
   };
 
-  const handleDelete = (taskId: number): void => {
+  const handleDelete = async (taskId: number): Promise<void> => {
     if (confirm("Are you sure you want to delete this task?")) {
-      setTasks(tasks.filter((task) => task.id !== taskId));
+      try {
+        await axiosInstance.delete(`/tasks/${taskId}`);
+        setTasks(tasks.filter((task) => task.id !== taskId));
+      } catch (error) {
+        console.error("Error deleting task:", error);
+      }
     }
   };
 
@@ -76,12 +85,9 @@ const Home: React.FC = () => {
   const sortedTasks = [...filteredTasks].sort((a, b) => {
     const dateA = new Date(a.dueDate);
     const dateB = new Date(b.dueDate);
-
-    if (sortOrder === "asc") {
-      return dateA.getTime() - dateB.getTime();
-    } else {
-      return dateB.getTime() - dateA.getTime();
-    }
+    return sortOrder === "asc"
+      ? dateA.getTime() - dateB.getTime()
+      : dateB.getTime() - dateA.getTime();
   });
 
   const totalPages = Math.ceil(sortedTasks.length / itemsPerPage);
