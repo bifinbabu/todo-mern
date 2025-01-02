@@ -34,6 +34,9 @@ const Home: React.FC = () => {
           params: {
             page: currentPage,
             limit: itemsPerPage,
+            searchQuery: searchQuery,
+            statusFilter: statusFilter,
+            sortOrder: sortOrder,
           },
         });
         setTasks(response.data.tasks);
@@ -46,7 +49,7 @@ const Home: React.FC = () => {
     };
 
     fetchTasks();
-  }, [currentPage]);
+  }, [currentPage, searchQuery, statusFilter, sortOrder]);
 
   const handleSubmit = async (
     values: TaskFormValues,
@@ -95,27 +98,27 @@ const Home: React.FC = () => {
     setIsDialogOpen(true);
   };
 
-  const filteredTasks = tasks.filter((task) => {
-    const matchesSearch = task.title
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || task.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  // const filteredTasks = tasks.filter((task) => {
+  //   const matchesSearch = task.title
+  //     .toLowerCase()
+  //     .includes(searchQuery.toLowerCase());
+  //   const matchesStatus =
+  //     statusFilter === "all" || task.status === statusFilter;
+  //   return matchesSearch && matchesStatus;
+  // });
 
-  const sortedTasks = [...filteredTasks].sort((a, b) => {
-    const dateA = new Date(a.dueDate);
-    const dateB = new Date(b.dueDate);
-    return sortOrder === "asc"
-      ? dateA.getTime() - dateB.getTime()
-      : dateB.getTime() - dateA.getTime();
-  });
+  // const sortedTasks = [...filteredTasks].sort((a, b) => {
+  //   const dateA = new Date(a.dueDate);
+  //   const dateB = new Date(b.dueDate);
+  //   return sortOrder === "asc"
+  //     ? dateA.getTime() - dateB.getTime()
+  //     : dateB.getTime() - dateA.getTime();
+  // });
 
-  const paginatedTasks = sortedTasks.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // const paginatedTasks = sortedTasks.slice(
+  //   (currentPage - 1) * itemsPerPage,
+  //   currentPage * itemsPerPage
+  // );
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
@@ -145,7 +148,7 @@ const Home: React.FC = () => {
             setSortOrder={setSortOrder}
           />
           <TaskTable
-            paginatedTasks={paginatedTasks}
+            paginatedTasks={tasks}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
           />

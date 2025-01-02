@@ -5,7 +5,7 @@ export const getTasks = async (req: Request, res: Response) => {
   const {
     page = 1,
     limit = 5,
-    sortBy = "createdAt",
+    sortBy = "dueDate",
     order = "desc",
     searchQuery = "",
     statusFilter = "all",
