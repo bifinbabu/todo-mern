@@ -18,6 +18,7 @@ export const getTasks = async (req: Request, res: Response) => {
     const total = await Task.countDocuments();
     res.status(200).json({ tasks, total });
   } catch (error) {
+    console.error("Error fetching tasks:", error);
     res.status(500).json({ message: "Error fetching tasks" });
   }
 };
@@ -35,6 +36,7 @@ export const addTask = async (req: Request, res: Response): Promise<any> => {
     await task.save();
     res.status(201).json(task);
   } catch (error) {
+    console.error("Error adding task:", error);
     res.status(500).json({ message: "Error adding task" });
   }
 };
@@ -51,6 +53,7 @@ export const updateTask = async (req: Request, res: Response): Promise<any> => {
 
     res.status(200).json(task);
   } catch (error) {
+    console.error("Error updating task:", error);
     res.status(500).json({ message: "Error updating task" });
   }
 };
@@ -65,6 +68,7 @@ export const deleteTask = async (req: Request, res: Response): Promise<any> => {
 
     res.status(200).json({ message: "Task deleted successfully" });
   } catch (error) {
+    console.error("Error deleting task:", error);
     res.status(500).json({ message: "Error deleting task" });
   }
 };

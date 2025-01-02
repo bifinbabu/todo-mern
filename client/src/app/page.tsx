@@ -7,6 +7,7 @@ import TaskFilters from "@/components/TaskFilters";
 import Pagination from "@/components/Pagination";
 import { Task, TaskFormValues } from "@/utils/types";
 import axiosInstance from "@/utils/axiosInstance";
+import ConfirmationModal from "@/components/ConfirmationModal";
 
 const Home: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -19,6 +20,9 @@ const Home: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 5;
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] =
+    useState<boolean>(false);
+  const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -57,14 +61,21 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleDelete = async (taskId: number): Promise<void> => {
-    if (confirm("Are you sure you want to delete this task?")) {
+  const handleDelete = (taskId: string): void => {
+    setTaskToDelete(taskId);
+    setIsConfirmationModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (taskToDelete !== null) {
       try {
-        await axiosInstance.delete(`/tasks/${taskId}`);
-        setTasks(tasks.filter((task) => task.id !== taskId));
+        await axiosInstance.delete(`/tasks/${taskToDelete}`);
+        setTasks(tasks.filter((task) => task.id !== taskToDelete));
       } catch (error) {
         console.error("Error deleting task:", error);
       }
+      setTaskToDelete(null);
+      setIsConfirmationModalOpen(false);
     }
   };
 
@@ -128,6 +139,12 @@ const Home: React.FC = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         totalPages={totalPages}
+      />
+
+      <ConfirmationModal
+        isOpen={isConfirmationModalOpen}
+        onClose={() => setIsConfirmationModalOpen(false)}
+        onConfirm={confirmDelete}
       />
     </div>
   );

@@ -5,7 +5,7 @@ import { Task } from "@/utils/types";
 interface TaskTableProps {
   paginatedTasks: Task[];
   handleEdit: (task: Task) => void;
-  handleDelete: (taskId: number) => void;
+  handleDelete: (taskId: string) => void;
 }
 
 const TaskTable: React.FC<TaskTableProps> = ({
@@ -13,6 +13,7 @@ const TaskTable: React.FC<TaskTableProps> = ({
   handleEdit,
   handleDelete,
 }) => {
+  console.log("first", paginatedTasks);
   return (
     <div className="bg-white rounded-lg shadow">
       <table className="w-full">
@@ -36,8 +37,8 @@ const TaskTable: React.FC<TaskTableProps> = ({
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {paginatedTasks.map((task) => (
-            <tr key={task.id}>
+          {paginatedTasks.map((task, index: number) => (
+            <tr key={index}>
               <td className="px-6 py-4">{task.title}</td>
               <td className="px-6 py-4">{task.description}</td>
               <td className="px-6 py-4">
@@ -68,7 +69,7 @@ const TaskTable: React.FC<TaskTableProps> = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleDelete(task.id)}
+                    onClick={() => handleDelete(task.id.toString())}
                   >
                     Delete
                   </Button>
