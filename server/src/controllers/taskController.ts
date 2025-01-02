@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import Task from "../models/taskModel";
 
+/**
+ * Handles the retrieval of tasks based on various query parameters.
+ *
+ * @param {Request} req - The Express request object.
+ * @param {Response} res - The Express response object.
+ */
 export const getTasks = async (req: Request, res: Response) => {
   const {
     page = 1,
@@ -39,6 +45,13 @@ export const getTasks = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Handles the creation of a new task.
+ *
+ * @param {Request} req - The Express request object.
+ * @param {Response} res - The Express response object.
+ * @returns {Promise<any>} A promise that resolves to the response.
+ */
 export const addTask = async (req: Request, res: Response): Promise<any> => {
   try {
     const { title, description, status, dueDate } = req.body;
@@ -65,6 +78,13 @@ export const addTask = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
+/**
+ * Handles the update of an existing task.
+ *
+ * @param {Request} req - The Express request object.
+ * @param {Response} res - The Express response object.
+ * @returns {Promise<any>} A promise that resolves to the response.
+ */
 export const updateTask = async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
@@ -82,6 +102,13 @@ export const updateTask = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
+/**
+ * Handles the deletion of a task.
+ *
+ * @param {Request} req - The Express request object.
+ * @param {Response} res - The Express response object.
+ * @returns {Promise<any>} A promise that resolves to the response.
+ */
 export const deleteTask = async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;

@@ -65,6 +65,17 @@ paths:
                     type: integer
                   allTotal:
                     type: integer
+              example:
+                tasks:
+                  - _id: "507f1f77bcf86cd799439011"
+                    title: "Complete API documentation"
+                    description: "Implement Swagger and ReDoc"
+                    status: "in-progress"
+                    dueDate: "2024-01-10T00:00:00.000Z"
+                    createdAt: "2024-01-03T00:00:00.000Z"
+                    updatedAt: "2024-01-03T00:00:00.000Z"
+                total: 1
+                allTotal: 1
         "500":
           description: Server error
     post:
@@ -90,6 +101,11 @@ paths:
                 dueDate:
                   type: string
                   format: date-time
+            example:
+              title: "New Task"
+              description: "Task description here"
+              status: "pending"
+              dueDate: "2024-01-10T00:00:00.000Z"
       responses:
         "201":
           description: Task created successfully
@@ -97,6 +113,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Task"
+              example:
+                _id: "507f1f77bcf86cd799439011"
+                title: "New Task"
+                description: "Task description here"
+                status: "pending"
+                dueDate: "2024-01-10T00:00:00.000Z"
+                createdAt: "2024-01-03T00:00:00.000Z"
+                updatedAt: "2024-01-03T00:00:00.000Z"
         "400":
           description: Invalid request
         "500":
@@ -110,6 +134,7 @@ paths:
         schema:
           type: string
         description: Task ID
+        example: "507f1f77bcf86cd799439011"
 
     put:
       summary: Update a task
@@ -119,6 +144,11 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/TaskUpdate"
+            example:
+              title: "Updated Task"
+              description: "Updated description"
+              status: "completed"
+              dueDate: "2024-01-15T00:00:00.000Z"
       responses:
         "200":
           description: Task updated successfully
@@ -126,6 +156,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Task"
+              example:
+                _id: "507f1f77bcf86cd799439011"
+                title: "Updated Task"
+                description: "Updated description"
+                status: "completed"
+                dueDate: "2024-01-15T00:00:00.000Z"
+                createdAt: "2024-01-03T00:00:00.000Z"
+                updatedAt: "2024-01-03T00:00:00.000Z"
         "404":
           description: Task not found
         "500":
@@ -136,6 +174,10 @@ paths:
       responses:
         "200":
           description: Task deleted successfully
+          content:
+            application/json:
+              example:
+                message: "Task deleted successfully"
         "404":
           description: Task not found
         "500":

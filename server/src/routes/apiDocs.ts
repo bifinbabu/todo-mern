@@ -1,18 +1,33 @@
 import express from "express";
 import * as redoc from "redoc-express";
+import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import path from "path";
 
 const router = express.Router();
 
-// Load the OpenAPI specification
 const openApiPath = path.join(__dirname, "../openapi.yaml");
 const openApiSpec = YAML.load(openApiPath);
 
-// Serve ReDoc HTML
+// Serve Swagger UI for testing
+router.use("/api-test", swaggerUi.serve);
+router.get(
+  "/api-test",
+  swaggerUi.setup(openApiSpec, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      tryItOutEnabled: true,
+      displayRequestDuration: true,
+      filter: true,
+    },
+    customCss: ".swagger-ui .topbar { display: none }",
+    customSiteTitle: "Task Management API Testing",
+  })
+);
+
+// Serve ReDoc for documentation
 router.get(
   "/docs",
-  // Serve the Redoc HTML page
   redoc.default({
     title: "Task Management API Documentation",
     specUrl: "/openapi.json",
