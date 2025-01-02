@@ -21,7 +21,7 @@ router.get(
       filter: true,
     },
     customCss: ".swagger-ui .topbar { display: none }",
-    customSiteTitle: "Task Management API Testing",
+    customSiteTitle: "To-Do API Testing",
   })
 );
 
@@ -29,7 +29,7 @@ router.get(
 router.get(
   "/docs",
   redoc.default({
-    title: "Task Management API Documentation",
+    title: "To-Do API Documentation",
     specUrl: "/openapi.json",
     redocOptions: {
       theme: {
