@@ -2,11 +2,11 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-// import connectDB from "./utils/dbConnect";
+import connectDB from "./utils/dbConnect";
 // import taskRoutes from "./routes/taskRoutes";
 
 dotenv.config();
-// connectDB();
+connectDB();
 
 const app = express();
 
