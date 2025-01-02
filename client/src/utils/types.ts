@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export interface Task {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   status: "pending" | "in-progress" | "completed";

@@ -69,7 +69,7 @@ const TaskTable: React.FC<TaskTableProps> = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleDelete(task.id.toString())}
+                    onClick={() => handleDelete(task._id.toString())}
                   >
                     Delete
                   </Button>

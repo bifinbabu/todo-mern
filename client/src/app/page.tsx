@@ -47,10 +47,10 @@ const Home: React.FC = () => {
   ): Promise<void> => {
     try {
       if (editingTask) {
-        await axiosInstance.put(`/tasks/${editingTask.id}`, values);
+        await axiosInstance.put(`/tasks/${editingTask._id}`, values);
         setTasks(
           tasks.map((task) =>
-            task.id === editingTask.id ? { ...values, id: task.id } : task
+            task._id === editingTask._id ? { ...values, _id: task._id } : task
           )
         );
       } else {
@@ -74,7 +74,7 @@ const Home: React.FC = () => {
     if (taskToDelete !== null) {
       try {
         await axiosInstance.delete(`/tasks/${taskToDelete}`);
-        setTasks(tasks.filter((task) => task.id !== taskToDelete));
+        setTasks(tasks.filter((task) => task._id !== taskToDelete));
       } catch (error) {
         console.error("Error deleting task:", error);
       }
