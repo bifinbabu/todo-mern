@@ -3,6 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import connectDB from "./utils/dbConnect";
+import Task from "./models/taskModel";
 // import taskRoutes from "./routes/taskRoutes";
 
 dotenv.config();
@@ -13,8 +14,9 @@ const app = express();
 app.use(cors());
 
 app.use(bodyParser.json());
-app.use("/", (req: Request, res: Response) => {
-  res.status(200).json({ message: "TODO api server" });
+app.use("/", async (req: Request, res: Response) => {
+  const tasks = await Task.find();
+  res.status(200).json({ message: "TODO api server", tasks });
 });
 // app.use("/api", taskRoutes);
 
