@@ -7,15 +7,29 @@ export const getTasks = async (req: Request, res: Response) => {
     limit = 5,
     sortBy = "createdAt",
     order = "desc",
+    searchQuery = "",
+    statusFilter = "all",
   } = req.query;
+
   const sortOrder = order === "asc" ? 1 : -1;
 
   try {
-    const tasks = await Task.find()
+    const query: any = {};
+
+    if (searchQuery) {
+      query.title = { $regex: searchQuery, $options: "i" }; // Case-insensitive search
+    }
+
+    if (statusFilter && statusFilter !== "all") {
+      query.status = statusFilter;
+    }
+
+    const tasks = await Task.find(query)
       .sort({ [sortBy as string]: sortOrder })
       .skip((Number(page) - 1) * Number(limit))
       .limit(Number(limit));
-    const total = await Task.countDocuments();
+
+    const total = await Task.countDocuments(query);
     res.status(200).json({ tasks, total });
   } catch (error) {
     console.error("Error fetching tasks:", error);
