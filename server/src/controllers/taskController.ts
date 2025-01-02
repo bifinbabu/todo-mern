@@ -4,7 +4,7 @@ import Task from "../models/taskModel";
 export const getTasks = async (req: Request, res: Response) => {
   const {
     page = 1,
-    limit = 10,
+    limit = 5,
     sortBy = "createdAt",
     order = "desc",
   } = req.query;

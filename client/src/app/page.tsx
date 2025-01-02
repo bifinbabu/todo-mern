@@ -24,13 +24,20 @@ const Home: React.FC = () => {
     useState<boolean>(false);
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [totalPages, setTotalPages] = useState<number>(0);
 
   useEffect(() => {
     const fetchTasks = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get("/tasks");
+        const response = await axiosInstance.get("/tasks", {
+          params: {
+            page: currentPage,
+            limit: itemsPerPage,
+          },
+        });
         setTasks(response.data.tasks);
+        setTotalPages(Math.ceil(response.data.total / itemsPerPage));
       } catch (error) {
         console.error("Error fetching tasks:", error);
       } finally {
@@ -39,7 +46,7 @@ const Home: React.FC = () => {
     };
 
     fetchTasks();
-  }, []);
+  }, [currentPage]);
 
   const handleSubmit = async (
     values: TaskFormValues,
@@ -105,7 +112,6 @@ const Home: React.FC = () => {
       : dateB.getTime() - dateA.getTime();
   });
 
-  const totalPages = Math.ceil(sortedTasks.length / itemsPerPage);
   const paginatedTasks = sortedTasks.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
