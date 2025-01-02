@@ -1,0 +1,180 @@
+openapi: 3.0.0
+info:
+  title: Task Management API
+  version: 1.0.0
+  description: API for managing tasks with CRUD operations
+servers:
+  - url: http://localhost:5000/api
+    description: Development server
+paths:
+  /tasks:
+    get:
+      summary: Get all tasks
+      description: Retrieve tasks with pagination, sorting, and filtering options
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 5
+          description: Number of items per page
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            default: dueDate
+          description: Field to sort by
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Sort order
+        - in: query
+          name: searchQuery
+          schema:
+            type: string
+          description: Search query for task title
+        - in: query
+          name: statusFilter
+          schema:
+            type: string
+            enum: [all, pending, completed, in-progress]
+            default: all
+          description: Filter tasks by status
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Task"
+                  total:
+                    type: integer
+                  allTotal:
+                    type: integer
+        "500":
+          description: Server error
+    post:
+      summary: Create a new task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - dueDate
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                  enum: [pending, completed, in-progress]
+                  default: pending
+                dueDate:
+                  type: string
+                  format: date-time
+      responses:
+        "201":
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          description: Invalid request
+        "500":
+          description: Server error
+
+  /tasks/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: Task ID
+
+    put:
+      summary: Update a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdate"
+      responses:
+        "200":
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: Task not found
+        "500":
+          description: Server error
+
+    delete:
+      summary: Delete a task
+      responses:
+        "200":
+          description: Task deleted successfully
+        "404":
+          description: Task not found
+        "500":
+          description: Server error
+
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [pending, completed, in-progress]
+        dueDate:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [pending, completed, in-progress]
+        dueDate:
+          type: string
+          format: date-time
