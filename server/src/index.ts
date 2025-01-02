@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import connectDB from "./utils/dbConnect";
 import Task from "./models/taskModel";
-// import taskRoutes from "./routes/taskRoutes";
+import taskRoutes from "./routes/taskRoutes";
 
 dotenv.config();
 connectDB();
@@ -19,7 +19,8 @@ app.use("/", async (req: Request, res: Response) => {
   // const tasks = {};
   res.status(200).json({ message: "TODO api server", tasks });
 });
-// app.use("/api", taskRoutes);
+
+app.use("/api", taskRoutes);
 
 const PORT = process.env.PORT || 5000;
 

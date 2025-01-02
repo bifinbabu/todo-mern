@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface ITask extends Document {
   title: string;
   description?: string;
-  status: "Pending" | "In Progress" | "Completed";
+  status: "pending" | "in-progress" | "completed";
   dueDate: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -15,8 +15,8 @@ const TaskSchema: Schema = new Schema(
     description: { type: String },
     status: {
       type: String,
-      enum: ["Pending", "In Progress", "Completed"],
-      default: "Pending",
+      enum: ["pending", "in-progress", "completed"],
+      default: "pending",
     },
     dueDate: { type: Date, required: true },
   },
