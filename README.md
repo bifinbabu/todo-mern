@@ -102,7 +102,6 @@ npm run dev
 
 ### Folder structure
 
-.
 ├── client/  
 ├── server/  
 ├── README.md # Project documentation
