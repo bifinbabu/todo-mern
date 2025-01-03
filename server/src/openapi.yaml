@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: API for managing tasks with CRUD operations
 servers:
-  - url: https://todo-mern-api-mu.vercel.app/api
+  - url: https://todo-mern-api-mu.vercel.app
     description: Development server
 paths:
   /tasks:
