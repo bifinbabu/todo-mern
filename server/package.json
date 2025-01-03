@@ -20,7 +20,7 @@
     "mongoose": "^8.9.3",
     "redoc": "^2.2.0",
     "redoc-express": "^2.1.0",
-    "swagger-ui-express": "^5.0.1",
+    "swagger-ui-express": "^4.6.3",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
