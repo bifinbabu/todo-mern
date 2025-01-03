@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Select,
   SelectContent,
@@ -28,14 +28,27 @@ const TaskFilters: React.FC<TaskFiltersProps> = ({
   sortOrder,
   setSortOrder,
 }) => {
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, []);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   return (
     <div className="mb-6 flex gap-4">
       <div className="flex-1 relative">
         <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
         <Input
+          ref={searchInputRef}
           placeholder="Search tasks..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handleSearchChange}
           className="pl-10"
         />
       </div>

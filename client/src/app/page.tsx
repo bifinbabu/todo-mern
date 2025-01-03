@@ -113,20 +113,21 @@ const Home: React.FC = () => {
         />
       </div>
 
+      <TaskFilters
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+      />
+
       {loading ? (
         <div className="flex justify-center items-center">
           <div className="loader">Loading...</div>
         </div>
       ) : (
         <>
-          <TaskFilters
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            sortOrder={sortOrder}
-            setSortOrder={setSortOrder}
-          />
           <TaskTable
             paginatedTasks={tasks}
             handleEdit={handleEdit}
