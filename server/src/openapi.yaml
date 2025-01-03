@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: Task Management API
+  title: To-Do List API
   version: 1.0.0
   description: API for managing tasks with CRUD operations
 servers:
-  - url: http://localhost:5000/api
+  - url: https://todo-mern-api-mu.vercel.app/api
     description: Development server
 paths:
   /tasks:
